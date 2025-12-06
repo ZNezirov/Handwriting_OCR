@@ -1,0 +1,7 @@
+#irtual environment ding
+venv/
+
+#de python cache files
+__pycache__/
+*.pyc
+*.pyo
