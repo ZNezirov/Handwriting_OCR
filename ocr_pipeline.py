@@ -28,8 +28,11 @@ def ocr_image(image_input):
     for line in lines:
         if len(line.shape) == 2:
             pil_image = Image.fromarray(line).convert("RGB")
-        else:
+
+        elif len(line.shape) == 3 and line.shape[2] == 4:
             pil_image = Image.fromarray(line)
+        else:
+            pil_image = Image.fromarray(np.stack([line]*3, axis=-1))
 
         pixel_values = processor(pil_image, return_tensors="pt").pixel_values.to(device)
         generated_ids = model.generate(pixel_values)
