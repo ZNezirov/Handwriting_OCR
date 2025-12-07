@@ -9,8 +9,8 @@ import cv2
 from preprocess import preprocess_image
 from segment import segment_lines
 
-processor = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten")
-model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-large-handwritten")
+processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
