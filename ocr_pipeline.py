@@ -1,43 +1,39 @@
-# ocr_pipeline.py
-
-from transformers import TrOCRProcessor, VisionEncoderDecoderModel
-from PIL import Image
-import torch
+import easyocr
 import numpy as np
-import cv2
+from PIL import Image
 
-from preprocess import preprocess_image
-from segment import segment_lines
-
-processor = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten")
-model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-large-handwritten")
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
+reader = easyocr.Reader(['en'], gpu=True)
 
 def ocr_image(image_input):
-    """
-    image_input: str path or Streamlit uploaded file (BytesIO)
-    returns: extracted text
-    """
-    preprocessed = preprocess_image(image_input)
-
-    lines = segment_lines(preprocessed)
-
-    results = []
-    for line in lines:
-        if len(line.shape) == 2:
-            pil_image = Image.fromarray(line).convert("RGB")
-
-        elif len(line.shape) == 3 and line.shape[2] == 4:
-            pil_image = Image.fromarray(line)
+    if not isinstance(image_input, str):
+        image = np.array(Image.open(image_input).convert("RGB"))
+    else:
+        image = image_input
+    
+    results = reader.readtext(image)
+    
+    sorted_results = sorted(results, key=lambda x: x[0][0][1])
+    
+    lines = []
+    current_line = []
+    current_y = None
+    
+    for (bbox, text, conf) in sorted_results:
+        y_center = (bbox[0][1] + bbox[2][1]) / 2
+        
+        if current_y is None:
+            current_y = y_center
+            current_line.append((bbox[0][0], text))
+        elif abs(y_center - current_y) < 20:
+            current_line.append((bbox[0][0], text))
         else:
-            pil_image = Image.fromarray(np.stack([line]*3, axis=-1))
-
-        pixel_values = processor(pil_image, return_tensors="pt").pixel_values.to(device)
-        generated_ids = model.generate(pixel_values)
-        text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-
-        results.append(text)
-
-    return "\n".join(results)
+            current_line.sort(key=lambda x: x[0])
+            lines.append(" ".join([t for _, t in current_line]))
+            current_line = [(bbox[0][0], text)]
+            current_y = y_center
+    
+    if current_line:
+        current_line.sort(key=lambda x: x[0])
+        lines.append(" ".join([t for _, t in current_line]))
+    
+    return "\n".join(lines)
