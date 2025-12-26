@@ -38,8 +38,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.markdown('<p class="main-header">handwriting reader</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">turn your scribbles into text</p>', unsafe_allow_html=True)
 
 col1, col2 = st.columns([1.2, 1.5], gap="large")
 
@@ -58,7 +56,7 @@ with col1:
         st.markdown("""
             <div style='text-align: center; padding: 3rem; color: #999;'>
                 <p style='font-size: 1.2rem;'>no image yet</p>
-                <p>upload something to get started</p>
+                <p>upload a photo in png jpg or jpeg, anything else with give an error unfortunately</p>
             </div>
         """, unsafe_allow_html=True)
 
@@ -66,10 +64,10 @@ with col2:
     st.markdown("### results")
     
     if uploaded_file:
-        with st.spinner("reading..."):
+        with st.spinner("reading, wait uno momento"):
             text, annotated_image = ocr_image_with_boxes(uploaded_file)
         
-        tabs = st.tabs(["text output", "detection view"])
+        tabs = st.tabs(["text output", "OCR detection boxes"])
         
         with tabs[0]:
             st.text_area(
@@ -91,9 +89,9 @@ with col2:
         st.markdown("""
             <div style='text-align: center; padding: 3rem; color: #999;'>
                 <p style='font-size: 1.2rem;'>waiting for input</p>
-                <p>upload an image to see the magic</p>
+                <p>upload the image first, or wait till the model is done generating the result c</p>
             </div>
         """, unsafe_allow_html=True)
 
 st.markdown("---")
-st.caption("built with easyocr · works best with clear handwriting")
+st.caption("built with easyocr - - works best with clear handwriting")
