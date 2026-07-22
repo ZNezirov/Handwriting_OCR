@@ -3,4 +3,4 @@ A small and simple tool to help you convert pictures of handwritten images (jpg,
  You can run 'Streamlit run app.py' in your terminal, which will start the app
 
 currently working on a 24/7 streamlit app.
-last updated: 27/12/2025
+last updated: 22/07/2026
