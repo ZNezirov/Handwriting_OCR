@@ -2,19 +2,19 @@
 
 A simple OCR tool that converts images of handwritten text (`.jpg`, `.jpeg`, `.png`) into editable text that can be copied and reused.
 
-Built with **Streamlit** and OCR models for handwritten text recognition.
-
 ## Demo
 
-Live application:
+![OCR Demo](DemoSS)
 
+Live application:  
 https://znezirov-handwriting-ocr.streamlit.app/
 
-## Screenshot
+## Features
 
-![OCR Demo](DemoSS.png)
+- Supports `.jpg`, `.jpeg`, and `.png` images
+- Converts handwritten text into editable text
+- Simple Streamlit interface
+- Copy extracted text directly
 
 ## Run Locally
-
-Clone the repository:
-
+Run streamlit run app.py in your terminal in your code editor
