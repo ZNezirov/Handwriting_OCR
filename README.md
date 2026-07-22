@@ -2,7 +2,7 @@
 A small and simple tool to help you convert pictures of handwritten images (jpg, png, jpeg currently supported) to text that you can copy.
  You can run 'Streamlit run app.py' in your terminal, which will start the app
 
-![OCR Demo](DemoSS.png)
+![OCR Demo](DemoSS)
 
 currently working on a 24/7 streamlit app.
 last updated: 22/07/2026
