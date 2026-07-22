@@ -1,9 +1,6 @@
 # Handwriting OCR
 
 A simple OCR tool that converts images of handwritten text (`.jpg`, `.jpeg`, `.png`) into editable text that can be copied and reused.
-
-## Demo
-
 ![OCR Demo](DemoSS)
 
 Live application:  
