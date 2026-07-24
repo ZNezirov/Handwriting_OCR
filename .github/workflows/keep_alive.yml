@@ -1,0 +1,58 @@
+name: Keep Streamlit App Awake
+
+on:
+  schedule:
+    - cron: '0 */8 * * *'  # every 8 hours, safely under your 12h sleep window
+  workflow_dispatch:        #allows manual trigger from the actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping with curl
+        id: curl_ping
+        continue-on-error: true
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" \
+            https://znezirov-handwriting-ocr.streamlit.app/)
+          echo "Response code: $response"
+          if [ "$response" -ne 200 ]; then
+            echo "curl_failed=true" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Set up Node (only if curl failed)
+        if: steps.curl_ping.outcome == 'failure'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright (only if curl failed)
+        if: steps.curl_ping.outcome == 'failure'
+        run: |
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Visit the app with a real browser (only if curl failed)
+        if: steps.curl_ping.outcome == 'failure'
+        run: |
+          cat << 'EOF' > ping.js
+          const { chromium } = require('playwright');
+
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage({
+              userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+            });
+            await page.goto('https://znezirov-handwriting-ocr.streamlit.app/', {
+              waitUntil: 'networkidle',
+              timeout: 30000
+            });
+            // give the WebSocket a moment to establish
+            await page.waitForTimeout(5000);
+            console.log('Page title:', await page.title());
+            await browser.close();
+          })();
+          EOF
+          node ping.js
